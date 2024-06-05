@@ -51,11 +51,11 @@ namespace CoffeeShopManagement
             this.btnCheckOut = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
             this.nmBeverageCount = new System.Windows.Forms.NumericUpDown();
+            this.btnMinusBeverage = new System.Windows.Forms.Button();
             this.btnAddBeverage = new System.Windows.Forms.Button();
             this.cbBeverage = new System.Windows.Forms.ComboBox();
             this.cbCategory = new System.Windows.Forms.ComboBox();
             this.flpTable = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnMinusBeverage = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -242,6 +242,7 @@ namespace CoffeeShopManagement
             this.btnCheckOut.Text = "Thanh toán";
             this.btnCheckOut.UseVisualStyleBackColor = true;
             this.btnCheckOut.Click += new System.EventHandler(this.btnCheckOut_Click);
+            this.btnCheckOut.Click += new System.EventHandler(this.btnPrint_Click);
             // 
             // panel4
             // 
@@ -267,6 +268,16 @@ namespace CoffeeShopManagement
             0,
             0,
             0});
+            // 
+            // btnMinusBeverage
+            // 
+            this.btnMinusBeverage.Location = new System.Drawing.Point(306, 44);
+            this.btnMinusBeverage.Name = "btnMinusBeverage";
+            this.btnMinusBeverage.Size = new System.Drawing.Size(93, 28);
+            this.btnMinusBeverage.TabIndex = 2;
+            this.btnMinusBeverage.Text = "Bớt món";
+            this.btnMinusBeverage.UseVisualStyleBackColor = true;
+            this.btnMinusBeverage.Click += new System.EventHandler(this.btnMinusBeverage_Click);
             // 
             // btnAddBeverage
             // 
@@ -302,16 +313,6 @@ namespace CoffeeShopManagement
             this.flpTable.Name = "flpTable";
             this.flpTable.Size = new System.Drawing.Size(542, 592);
             this.flpTable.TabIndex = 5;
-            // 
-            // btnMinusBeverage
-            // 
-            this.btnMinusBeverage.Location = new System.Drawing.Point(306, 44);
-            this.btnMinusBeverage.Name = "btnMinusBeverage";
-            this.btnMinusBeverage.Size = new System.Drawing.Size(93, 28);
-            this.btnMinusBeverage.TabIndex = 2;
-            this.btnMinusBeverage.Text = "Bớt món";
-            this.btnMinusBeverage.UseVisualStyleBackColor = true;
-            this.btnMinusBeverage.Click += new System.EventHandler(this.btnMinusBeverage_Click);
             // 
             // fTableManager
             // 

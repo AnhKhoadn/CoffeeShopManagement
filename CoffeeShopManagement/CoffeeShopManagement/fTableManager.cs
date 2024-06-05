@@ -11,12 +11,17 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Printing;
 using Menu = CoffeeShopManagement.DTO.Menu;
 
 namespace CoffeeShopManagement
 {
     public partial class fTableManager : Form
     {
+        private PrintDocument printDocument;
+        private PrintDialog printDialog;
+        private string receiptText;
+
         private Account loginAccount;
 
         public Account LoginAccount
@@ -34,9 +39,24 @@ namespace CoffeeShopManagement
             LoadTable();
             LoadCategory();
             LoadComboBoxTable(cbSwitchTable);
+
+            printDocument = new PrintDocument();
+            printDialog = new PrintDialog();
+
+            printDocument.PrintPage += new PrintPageEventHandler(printDocument_PrintPage);
         }
 
         #region method
+        private void printDocument_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            // Set up font and brush
+            Font font = new Font("Arial", 12);
+            Brush brush = Brushes.Black;
+
+            // Draw the text
+            e.Graphics.DrawString(receiptText, font, brush, new PointF(100, 100));
+        }
+
         void ChangeAccount(int type)
         {
             adminToolStripMenuItem.Enabled = type == 1;
@@ -104,13 +124,13 @@ namespace CoffeeShopManagement
                 totalPrice += item.TotalPrice;
 
                 lsvBill.Items.Add(lsvItem);
-            }
+
+            }          
             CultureInfo culture = new CultureInfo("vi-VN"); //thay đổi culture(ngôn ngữ)
 
             Thread.CurrentThread.CurrentCulture = culture; //chỉ thay đổi format của luồng hiện tại, ko thay đổi format cả máy tính
 
             txbTotalPrice.Text = totalPrice.ToString("c"); //tổng giá tiền, "c" = currency format
-
         }
 
         void LoadComboBoxTable(ComboBox cb)
@@ -122,6 +142,49 @@ namespace CoffeeShopManagement
 
 
         #region event
+        private void btnPrint_Click(object sender, EventArgs e)
+        {
+            // Generate receipt text
+            //ShowBill((lsvBill.Tag as Table).ID);
+
+            // Show print dialog and print if user confirms
+            printDialog.Document = printDocument;
+            if (printDialog.ShowDialog() == DialogResult.OK)
+            {
+                printDocument.Print();
+            }
+        }
+
+        private void GenerateReceipt()
+        {
+            receiptText = "Coffee Shop Receipt\n\n";
+            receiptText += $"Tên đồ uống\t\tSố lượng\tĐơn giá\t\tThành tiền\n";
+            receiptText += "------------------------------------------------------------\n";
+
+            foreach (ListViewItem item in lsvBill.Items)
+            {
+                string beverageName = item.SubItems[0].Text;
+                string count = item.SubItems[1].Text;
+                string price = item.SubItems[2].Text;
+                string totalPrice = item.SubItems[3].Text;
+
+                receiptText += $"{AlignColumn(beverageName, 38)}{AlignColumn(count, 25)}{AlignColumn(price, 30)}{AlignColumn(totalPrice, 30)}\n";
+            }
+
+            receiptText += "------------------------------------------------------------\n";
+            receiptText += $"Tổng tiền: {txbTotalPrice.Text}\n";
+            receiptText += "\nCảm ơn bạn đã mua hàng!";
+        }
+
+        private string AlignColumn(string text, int width)
+        {
+            if (text.Length > width)
+            {
+                text = text.Substring(0, width - 3) + "...";
+            }
+            return text.PadRight(width);
+        }
+
         private void Btn_Click(object sender, EventArgs e) //sau khi click vào btn (bàn) thì sẽ show bill tương ứng
         {
             int TableID = ((sender as Button).Tag as Table).ID;
@@ -333,6 +396,9 @@ namespace CoffeeShopManagement
             {
                 if (MessageBox.Show(string.Format("Bạn có muốn thanh toán {0}\nGiảm giá {1}%\nTổng tiền = {2}₫", table.Name, discount, finalToTalPrice), "Thông báo", MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
                 {
+                    //Lấy ra thông tin hóa đơn trên file pdf trước khi thanh toán
+                    GenerateReceipt();
+
                     BillDAO.Instance.ChekOut(idBill, discount, (float)finalToTalPrice);
                     ShowBill(table.ID);
 
